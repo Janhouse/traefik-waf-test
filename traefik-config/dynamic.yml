@@ -1,0 +1,24 @@
+http:
+  middlewares:
+    waf:
+      plugin:
+        coraza-http-wasm-traefik:
+          directives:
+            #- Include @coraza.conf-recommended
+            #- Include @crs-setup.conf.example
+            #- Include @owasp_crs/**.conf
+            - SecRuleEngine On
+            - SecDebugLog /dev/stdout
+            - SecDebugLogLevel 9
+            - SecAuditLogFormat JSON
+            - SecRequestBodyAccess On
+            - SecRule REQUEST_URI "@streq /admin" "id:101,phase:1,log,deny,status:403"
+
+  serversTransports:
+    http1:
+      disableHTTP2: true
+      
+tls:
+  certificates:
+    - certFile: "/certs/server-cert.pem" 
+      keyFile: "/certs/server-key.pem"
